@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Scan Barcode - Safety Check</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+    <script src="https://unpkg.com/@zxing/library@latest"></script>
+    <link rel="stylesheet" href="../css/style.css" />
+</head>
+<body>
+    <div class="main-container">
+        <div class="safety-card scan-card">
+            <div class="back-nav">
+                <a href="index.html">← Kembali</a>
+            </div>
+            
+            <h2>Verifikasi Identitas</h2>
+            <p>Silakan arahkan barcode kartu pekerja Anda ke kotak kamera di bawah ini.</p>
+
+            <div class="scanner-wrapper">
+                <video id="preview"></video>
+                <div class="scanner-overlay"></div>
+                <div class="scanner-line"></div>
+            </div>
+
+            <p id="result" class="scan-status">Mencari barcode...</p>
+
+            <hr class="divider">
+
+            <div class="steps-container">
+                <div class="step">
+                    <span class="step-number">1</span>
+                    <span class="step-text">Siapkan ID Card</span>
+                </div>
+                <div class="step">
+                    <span class="step-number">2</span>
+                    <span class="step-text">Posisikan di Tengah</span>
+                </div>
+                <div class="step">
+                    <span class="step-number">3</span>
+                    <span class="step-text">Tunggu Verifikasi</span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="../js/barcode.js"></script>
+</body>
+</html>
