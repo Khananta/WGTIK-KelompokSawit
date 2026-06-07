@@ -1,48 +1,71 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="id">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Safety Check - Verifikasi Masker</title>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="../css/style.css">
-    
-    <script src="https://cdn.jsdelivr.net/npm/@mediapipe/pose"></script>
-    <script src="https://cdn.jsdelivr.net/npm/@mediapipe/camera_utils"></script>
-    <script src="https://cdn.jsdelivr.net/npm/@mediapipe/drawing_utils"></script>
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Safety Check - Verifikasi APD</title>
+
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet" />
+    <link rel="stylesheet" href="../css/style.css" />
+
+    <script src="https://cdn.jsdelivr.net/npm/@mediapipe/camera_utils/camera_utils.js"></script>
+
+    <script src="https://cdn.jsdelivr.net/npm/@mediapipe/drawing_utils/drawing_utils.js"></script>
+
+    <script src="https://cdn.jsdelivr.net/npm/@mediapipe/pose/pose.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/@tensorflow/tfjs@latest/dist/tf.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/@teachablemachine/image@latest/dist/teachablemachine-image.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@teachablemachine/image@latest/dist/tmImage.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-</head>
-<body>
+  </head>
 
+  <body>
     <div class="main-container">
-        <div class="safety-card check-card">
-            <header class="check-header">
-                <h2>Verifikasi Keamanan</h2>
-                <div class="worker-info">
-                    <span id="workerName">Memuat identitas...</span>
-                </div>
-            </header>
+      <div class="safety-card check-card">
+        <header class="check-header">
+          <h2>Verifikasi Keamanan</h2>
 
-            <div class="video-container">
-                <video id="camera" style="display:none;"></video>
-                <canvas id="canvas" width="640" height="480"></canvas>
-                
-                <div class="camera-guide"></div>
-            </div>
+          <div class="worker-info">
+            <span id="workerName"> Memuat identitas... </span>
+          </div>
+        </header>
 
-            <div id="status" class="status-indicator">
-                Inisialisasi AI...
-            </div>
+        <div class="video-container">
+          <video id="camera" autoplay playsinline muted style="display: none"></video>
+          <canvas id="canvas" width="640" height="480"></canvas>
 
-            <div class="button-group horizontal">
-                <button class="btn-secondary" onclick="location.href='index.html'">Batal</button>
-                <button class="btn-primary" onclick="location.href='recap.html'">Halaman Rekap</button>
-            </div>
+          <div class="camera-guide"></div>
         </div>
+
+        <div id="status" class="status-indicator">Inisialisasi AI...</div>
+
+        <div class="attribute-panel">
+          <div class="attribute-item">
+            <div class="attribute-left">
+              🪖
+              <span>Helm</span>
+            </div>
+
+            <span id="helmetResult" class="status-wait"> ⏳ Menunggu </span>
+          </div>
+
+          <div class="attribute-item">
+            <div class="attribute-left">
+              😷
+              <span>Masker</span>
+            </div>
+
+            <span id="maskResult" class="status-wait"> ⏳ Menunggu </span>
+          </div>
+        </div>
+
+        <div class="button-group horizontal">
+          <button class="btn-secondary" onclick="location.href = 'index.html'">Batal</button>
+
+          <button class="btn-primary" onclick="location.href = 'recap.html'">Rekap Data</button>
+        </div>
+      </div>
     </div>
 
     <script src="../js/detect.js"></script>
-</body>
+  </body>
 </html>

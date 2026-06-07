@@ -238,7 +238,8 @@ canvas {
 }
 
 .status-indicator {
-    margin: 20px 0;
+    margin-top:12px;
+    margin-bottom:12px;
     padding: 15px;
     border-radius: 12px;
     font-weight: 700;
@@ -332,4 +333,45 @@ canvas {
     padding: 50px;
     color: #94a3b8;
     font-style: italic;
+}
+
+.attribute-panel{
+    margin-top:12px;
+    background:#fff;
+    border-radius:16px;
+    overflow:hidden;
+    border:1px solid #e5e7eb;
+}
+
+.attribute-item{
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    padding:16px 20px;
+    font-size:18px;
+    font-weight:600;
+}
+
+.attribute-item:not(:last-child){
+    border-bottom:1px solid #f1f5f9;
+}
+
+.attribute-left{
+    display:flex;
+    align-items:center;
+    gap:10px;
+}
+
+.status-wait{
+    color:#64748b;
+}
+
+.status-success{
+    color:#16a34a;
+    font-weight:700;
+}
+
+.status-fail{
+    color:#dc2626;
+    font-weight:700;
 }
