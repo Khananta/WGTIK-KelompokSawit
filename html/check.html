@@ -14,7 +14,7 @@
 
     <script src="https://cdn.jsdelivr.net/npm/@mediapipe/pose/pose.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/@tensorflow/tfjs@latest/dist/tf.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/@teachablemachine/image@latest/dist/tmImage.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@teachablemachine/image@latest/dist/teachablemachine-image.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
   </head>
 
@@ -29,7 +29,7 @@
           </div>
         </header>
 
-        <div class="video-container">
+        <div class="video-container" id="video-container-div">
           <video id="camera" autoplay playsinline muted style="display: none"></video>
           <canvas id="canvas" width="640" height="480"></canvas>
 
@@ -56,11 +56,24 @@
 
             <span id="maskResult" class="status-wait"> ⏳ Menunggu </span>
           </div>
+
+          <div class="attribute-item">
+            <div class="attribute-left">
+              🥽
+              <span>Kacamata</span>
+            </div>
+
+            <span id="glassesResult" class="status-wait"> ⏳ Menunggu </span>
+          </div>
         </div>
+
+        <input type="file" id="imageUpload" accept="image/*" style="display: none;" />
+        <button id="btnUpload" class="btn-secondary" style="margin-bottom: 15px; width: 100%; border: 2px dashed #6366f1; color: #6366f1; display: none;" onclick="document.getElementById('imageUpload').click()">
+          📁 Unggah Foto (Uji Coba)
+        </button>
 
         <div class="button-group horizontal">
           <button class="btn-secondary" onclick="location.href = 'index.html'">Batal</button>
-
           <button class="btn-primary" onclick="location.href = 'recap.html'">Rekap Data</button>
         </div>
       </div>
