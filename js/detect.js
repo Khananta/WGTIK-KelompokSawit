@@ -1,8 +1,11 @@
-const MASK_URL = 'https://teachablemachine.withgoogle.com/models/t3DsCswoe/';
-const HELMET_URL = 'https://teachablemachine.withgoogle.com/models/aKWt2ILvG/';
+const MASK_URL = 'https://teachablemachine.withgoogle.com/models/W0XPL_SL8/';
+const HELMET_URL = 'https://teachablemachine.withgoogle.com/models/wmk9d7ycW/';
+const GLASSES_URL = 'https://teachablemachine.withgoogle.com/models/X4SAlDgM1/';
+
 
 let maskModel;
 let helmetModel;
+let glassesModel;
 let pose, camera;
 
 let isProcessing = false;
@@ -13,46 +16,61 @@ const canvasElement = document.getElementById('canvas');
 const canvasCtx = canvasElement.getContext('2d');
 const statusElement = document.getElementById('status');
 
-async function loadModels() {
+async function loadModels(useCamera = true) {
   statusElement.innerText = 'Memuat AI Model... Mohon Tunggu';
 
   try {
+    statusElement.innerText = 'Memuat Model Masker... (1/3)';
     maskModel = await tmImage.load(MASK_URL + 'model.json', MASK_URL + 'metadata.json');
-    helmetModel = await tmImage.load(HELMET_URL + 'model.json', HELMET_URL + 'metadata.json');
-
     console.log('Mask Model Loaded');
+
+    statusElement.innerText = 'Memuat Model Helm... (2/3)';
+    helmetModel = await tmImage.load(HELMET_URL + 'model.json', HELMET_URL + 'metadata.json');
     console.log('Helmet Model Loaded');
 
-    pose = new Pose({
-      locateFile: (file) => `https://cdn.jsdelivr.net/npm/@mediapipe/pose/${file}`,
-    });
+    statusElement.innerText = 'Memuat Model Kacamata... (3/3)';
+    glassesModel = await tmImage.load(GLASSES_URL + 'model.json', GLASSES_URL + 'metadata.json');
+    console.log('Glasses Model Loaded');
 
-    pose.setOptions({
-      modelComplexity: 1,
-      smoothLandmarks: true,
-      minDetectionConfidence: 0.5,
-      minTrackingConfidence: 0.5,
-    });
+    if (useCamera) {
+      statusElement.innerText = 'Menyiapkan Pose Detection...';
 
-    pose.onResults(onPoseResults);
+      pose = new Pose({
+        locateFile: (file) => `https://cdn.jsdelivr.net/npm/@mediapipe/pose/${file}`,
+      });
 
-    console.log('Pose Loaded');
+      pose.setOptions({
+        modelComplexity: 1,
+        smoothLandmarks: true,
+        minDetectionConfidence: 0.5,
+        minTrackingConfidence: 0.5,
+      });
+
+      pose.onResults(onPoseResults);
+
+      statusElement.innerText = 'Menginisialisasi Deteksi Tubuh... (Agak Lama)';
+      await pose.initialize();
+      
+      console.log('Pose Loaded');
+    }
   } catch (e) {
     console.error(e);
     statusElement.innerText = 'Gagal memuat model AI';
   }
 }
 
-async function startAutomaticFlow() {
+async function startAutomaticFlow(skipCountdown = false) {
   isProcessing = true;
 
-  for (let i = countdownDuration; i > 0; i--) {
-    statusElement.innerText = `Siap dalam ${i}...`;
-    statusElement.style.backgroundColor = '#fff7ed';
-    statusElement.style.color = '#c2410c';
-    statusElement.style.border = '1px solid #fdba74';
+  if (!skipCountdown) {
+    for (let i = countdownDuration; i > 0; i--) {
+      statusElement.innerText = `Siap dalam ${i}...`;
+      statusElement.style.backgroundColor = '#fff7ed';
+      statusElement.style.color = '#c2410c';
+      statusElement.style.border = '1px solid #fdba74';
 
-    await new Promise((resolve) => setTimeout(resolve, 1000));
+      await new Promise((resolve) => setTimeout(resolve, 1000));
+    }
   }
 
   statusElement.innerHTML = '🔍 Memindai atribut keselamatan...';
@@ -73,8 +91,15 @@ async function startAutomaticFlow() {
   const helmetPrediction = await helmetModel.predict(canvasElement);
   const helmetOK = helmetPrediction[0].probability > helmetPrediction[1].probability;
 
+  // ==========================
+  // PREDIKSI KACAMATA
+  // ==========================
+  const glassesPrediction = await glassesModel.predict(canvasElement);
+  const glassesOK = glassesPrediction[0].probability > glassesPrediction[1].probability;
+
   console.log(maskPrediction);
   console.log(helmetPrediction);
+  console.log(glassesPrediction);
 
   // ==========================
   // HASIL AKHIR
@@ -89,14 +114,22 @@ async function startAutomaticFlow() {
     atributKurang.push('Helm');
   }
 
+  if (!glassesOK) {
+    atributKurang.push('Kacamata');
+  }
+
   const isSafe = atributKurang.length === 0;
 
   // Update panel hasil
   const helmetResult = document.getElementById('helmetResult');
   const maskResult = document.getElementById('maskResult');
+  const glassesResult = document.getElementById('glassesResult');
 
   helmetResult.innerHTML = helmetOK ? '<span class="status-success">✅ Terdeteksi</span>' : '<span class="status-fail">❌ Tidak Terdeteksi</span>';
   maskResult.innerHTML = maskOK ? '<span class="status-success">✅ Terdeteksi</span>' : '<span class="status-fail">❌ Tidak Terdeteksi</span>';
+  if (glassesResult) {
+    glassesResult.innerHTML = glassesOK ? '<span class="status-success">✅ Terdeteksi</span>' : '<span class="status-fail">❌ Tidak Terdeteksi</span>';
+  }
 
   // Update status utama
   statusElement.innerHTML = isSafe ? '✅ AKSES DIBERIKAN' : '❌ AKSES DITOLAK';
@@ -186,45 +219,102 @@ function onPoseResults(results) {
 // ========================================================
 // FUNGSI UTAMA YANG SUDAH DIPERBAIKI (PERUBAHAN DI SINI)
 // ========================================================
-async function startSystem() {
-  await loadModels();
+async function startSystem(useCamera) {
+  await loadModels(useCamera);
 
-  // Inisialisasi dimensi canvas internal agar sinkron dengan video
-  canvasElement.width = 640;
-  canvasElement.height = 480;
+  if (useCamera) {
+    // Inisialisasi dimensi canvas internal agar sinkron dengan video
+    canvasElement.width = 640;
+    canvasElement.height = 480;
 
-  camera = new Camera(videoElement, {
-    onFrame: async () => {
-      await pose.send({
-        image: videoElement,
-      });
-    },
-    width: 640,
-    height: 480,
-  });
+    camera = new Camera(videoElement, {
+      onFrame: async () => {
+        await pose.send({
+          image: videoElement,
+        });
+      },
+      width: 640,
+      height: 480,
+    });
 
-  statusElement.innerText = 'Menghidupkan Kamera...';
+    statusElement.innerText = 'Menghidupkan Kamera...';
 
-  try {
-    await camera.start();
-    console.log('Camera Started Successfully');
-  } catch (err) {
-    console.error(err);
-    statusElement.innerHTML = '❌ Kamera gagal dibuka. Pastikan izin kamera aktif.';
+    try {
+      await camera.start();
+      console.log('Camera Started Successfully');
+    } catch (err) {
+      console.error(err);
+      statusElement.innerHTML = '❌ Kamera gagal dibuka. Pastikan izin kamera aktif.';
+    }
+  } else {
+    statusElement.innerText = 'Silakan unggah foto uji coba.';
   }
-
-  // Panggilan duplikat camera.start() yang bikin blank hitam sudah dihapus.
 }
 
 window.addEventListener('DOMContentLoaded', () => {
   const workerName = sessionStorage.getItem('workerName');
+
+  const imageUpload = document.getElementById('imageUpload');
+  if (imageUpload) {
+    imageUpload.addEventListener('change', (event) => {
+      const file = event.target.files[0];
+      if (file) {
+        if (camera) {
+          try {
+            camera.stop();
+          } catch(e) {}
+        }
+        
+        statusElement.innerText = 'Menganalisis Foto Unggahan...';
+        const img = new Image();
+        img.onload = () => {
+          canvasCtx.save();
+          canvasCtx.clearRect(0, 0, canvasElement.width, canvasElement.height);
+          
+          // Hitung rasio agar gambar tidak penyok
+          const scale = Math.min(canvasElement.width / img.width, canvasElement.height / img.height);
+          const x = (canvasElement.width / 2) - (img.width / 2) * scale;
+          const y = (canvasElement.height / 2) - (img.height / 2) * scale;
+          
+          canvasCtx.drawImage(img, x, y, img.width * scale, img.height * scale);
+          canvasCtx.restore();
+          
+          if (!isProcessing) {
+            startAutomaticFlow(true); // skip countdown on file upload
+          }
+        };
+        img.src = URL.createObjectURL(file);
+      }
+    });
+  }
 
   if (workerName) {
     const workerNameEl = document.getElementById('workerName');
     if (workerNameEl) {
       workerNameEl.innerText = `Selamat Datang, ${workerName}`;
     }
-    startSystem();
+    
+    Swal.fire({
+      title: 'Pilih Mode Deteksi',
+      text: 'Bagaimana Anda ingin melakukan verifikasi APD?',
+      icon: 'question',
+      showDenyButton: true,
+      confirmButtonText: '📷 Gunakan Kamera',
+      denyButtonText: '📁 Unggah Foto',
+      allowOutsideClick: false,
+      allowEscapeKey: false,
+    }).then((result) => {
+      if (result.isConfirmed) {
+        document.getElementById('video-container-div').style.display = 'block';
+        document.getElementById('btnUpload').style.display = 'none';
+        startSystem(true);
+      } else if (result.isDenied) {
+        document.getElementById('video-container-div').style.display = 'none';
+        document.getElementById('btnUpload').style.display = 'block';
+        startSystem(false);
+      }
+    });
+
   } else {
     // Diproteksi agar tidak redirect looping jika memang sengaja tes halaman ini
     // window.location.href = 'scan.html';
