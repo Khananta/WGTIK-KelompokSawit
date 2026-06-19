@@ -235,6 +235,7 @@ async function startSystem(useCamera) {
       },
       width: 640,
       height: 480,
+      facingMode: 'user'
     });
 
     statusElement.innerText = 'Menghidupkan Kamera...';
@@ -328,7 +329,7 @@ window.addEventListener('load', () => {
   // Hanya jalankan QR Reader jika elemen UI prasyaratnya ('preview') ada di halaman ini
   if (video && typeof ZXing !== 'undefined') {
     const codeReader = new ZXing.BrowserMultiFormatReader();
-    codeReader.decodeFromVideoDevice(null, video, async (result, err) => {
+    codeReader.decodeFromConstraints({ video: { facingMode: "user" } }, video, async (result, err) => {
       if (result) {
         resultElement.innerText = 'Mengecek ID: ' + result.text;
         try {
