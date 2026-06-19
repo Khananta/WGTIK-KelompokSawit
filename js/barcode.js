@@ -3,7 +3,7 @@ window.addEventListener("load", () => {
     const video = document.getElementById("preview");
     const resultElement = document.getElementById("result");
 
-    codeReader.decodeFromConstraints({ video: { facingMode: "user" } }, video, async (result, err) => {
+    codeReader.decodeFromConstraints({ video: { facingMode: "environment" } }, video, async (result, err) => {
         if (result) {
             resultElement.innerText = "Mengecek ID: " + result.text;
             try {

@@ -27,30 +27,32 @@ function renderRecap() {
         htmlContent += `
             <div class="date-group">
                 <div class="date-badge">${date}</div>
-                <table class="recap-table">
-                    <thead>
-                        <tr>
-                            <th>Waktu</th>
-                            <th>Nama</th>
-                            <th>ID Pekerja</th>
-                            <th>Status</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        ${groupedData[date].map(row => `
+                <div class="table-responsive">
+                    <table class="recap-table">
+                        <thead>
                             <tr>
-                                <td>${row.waktu.split(',')[1] || row.waktu}</td>
-                                <td><strong>${row.nama}</strong></td>
-                                <td>${row.id}</td>
-                                <td>
-                                    <span class="status-badge ${row.status.includes('LENGKAP') && !row.status.includes('TIDAK') ? 'status-ok' : 'status-fail'}">
-                                        ${row.status}
-                                    </span>
-                                </td>
+                                <th>Waktu</th>
+                                <th>Nama</th>
+                                <th>ID Pekerja</th>
+                                <th>Status</th>
                             </tr>
-                        `).join('')}
-                    </tbody>
-                </table>
+                        </thead>
+                        <tbody>
+                            ${groupedData[date].map(row => `
+                                <tr>
+                                    <td>${row.waktu.split(',')[1] || row.waktu}</td>
+                                    <td><strong>${row.nama}</strong></td>
+                                    <td>${row.id}</td>
+                                    <td>
+                                        <span class="status-badge ${row.status.includes('LENGKAP') && !row.status.includes('TIDAK') ? 'status-ok' : 'status-fail'}">
+                                            ${row.status}
+                                        </span>
+                                    </td>
+                                </tr>
+                            `).join('')}
+                        </tbody>
+                    </table>
+                </div>
             </div>
         `;
     }

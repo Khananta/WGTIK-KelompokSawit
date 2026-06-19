@@ -377,3 +377,72 @@ canvas {
     color:#dc2626;
     font-weight:700;
 }
+
+/* =========================================
+   RESPONSIVE MOBILE STYLES
+   ========================================= */
+@media (max-width: 600px) {
+    .main-container {
+        padding: 15px;
+    }
+
+    .safety-card {
+        padding: 24px 20px;
+        border-radius: 16px;
+    }
+    
+    .check-card, .wide-card {
+        padding: 20px;
+    }
+
+    h1 {
+        font-size: 20px;
+    }
+    
+    p {
+        font-size: 13px;
+        margin-bottom: 20px;
+    }
+
+    .logo-icon {
+        font-size: 40px;
+        margin-bottom: 10px;
+    }
+
+    .button-group.horizontal {
+        flex-direction: column;
+        gap: 10px;
+    }
+
+    .button-group.horizontal button {
+        width: 100%;
+    }
+
+    .scanner-wrapper {
+        height: 200px;
+    }
+
+    .attribute-item {
+        padding: 12px 15px;
+        font-size: 15px;
+    }
+
+    /* Table Scroll Wrapper */
+    .table-responsive {
+        width: 100%;
+        overflow-x: auto;
+        -webkit-overflow-scrolling: touch;
+        border-radius: 8px;
+        margin-bottom: 20px;
+    }
+
+    .recap-table {
+        min-width: 550px; /* Memaksa tabel agar scrollable jika terlalu sempit */
+        margin-bottom: 0;
+    }
+    
+    .date-badge {
+        font-size: 13px;
+        padding: 5px 12px;
+    }
+}
